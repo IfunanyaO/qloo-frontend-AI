@@ -6,7 +6,7 @@ import svgr from "vite-plugin-svgr";
 
 // https://vite.dev/config/
 export default defineConfig({
-  // base: '/projects/tania/',
+  // base: '/projects/ct-planner/',
   plugins: [
     react(),
     tailwindcss(),

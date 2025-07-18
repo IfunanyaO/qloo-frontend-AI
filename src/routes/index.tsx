@@ -7,7 +7,7 @@ export const AppRoutes = () => {
   return (
     // TODO: Replace suspense fallback with custom Loader
     <Suspense fallback={<div>Loading...</div>}>
-      {/* <Router basename="/projects/tania"> */}
+      {/* <Router basename="/projects/ct-planner"> */}
       <Router>
         <Routes>
           {AuthRoutes()}
