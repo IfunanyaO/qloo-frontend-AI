@@ -49,6 +49,7 @@ const GoogleMapPageComponent: React.FC = () => {
    return (
     <>
     <div>
+      <h1 className="text-5xl font-bold">Google Page</h1>
         <h1>Google Page</h1>
     </div>
 

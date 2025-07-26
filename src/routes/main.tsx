@@ -5,6 +5,7 @@ import KgPageComponent from "@/pages/kg-graph/KgPageComponent";
 import TestPageComponent from "@/pages/test/TestPageComponent";
 import SpotifyPageComponent from "@/pages/spotify/SpotifyPageComponent";
 import GoogleMapPageComponent from "@/pages/google-map/GoogleMapPageComponent";
+import PlanPage from "@/pages/trip-plan/plan";
 
 const ChatPage = React.lazy(() =>
   import("@/features/chat").then((module) => ({
@@ -21,6 +22,7 @@ export const MainRoutes = () => {
         <Route path="map" element={<GoogleMapPageComponent />} />
         <Route path="spotify" element={<SpotifyPageComponent />} />
         <Route path="test" element={<TestPageComponent />} />
+        <Route path="plan" element={<PlanPage />} />
      </Route>
   );
 };
