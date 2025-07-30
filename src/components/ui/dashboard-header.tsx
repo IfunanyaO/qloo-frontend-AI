@@ -72,8 +72,6 @@ export const DashboardHeader = () => {
               className="flex flex-row items-center gap-6"
               variants={itemVariants}
             >
-              {/** TODO: Wrap with Icon Button */}
-              <SearchIcon className="text-text-light dark:text-text-dark" />
 
               <Interaction
                 ref={avatarRef}

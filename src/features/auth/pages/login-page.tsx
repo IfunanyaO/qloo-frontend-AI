@@ -16,17 +16,17 @@ export const LoginPage = () => {
             <h3 className="text-[40px] font-bold text-start leading-normal">
               Join{" "}
               <span className="text-text-light/40 dark:text-text-dark/40">
-                the
+                Tania
               </span>{" "}
-              BIOHackathon{" "}
+              CultureTrip Planner{" "}
               <span className="text-text-light/40 dark:text-text-dark/40">
                 Platform
               </span>
             </h3>
             <p className="text-[20px] text-text-light/40 dark:text-text-dark/40">
-              Explore, build, and contribute to the future of AI + Bio
-              innovation. Whether you're a developer, researcher, or curious
-              mind — you're welcome here.
+              A smart travel planner that builds customized trip itineraries based on a user’s tastes (e.g., music, fashion, food, books), mood, or goals (relax, explore, party).
+              You input a destination + vibe, and it creates a culturally rich itinerary using Qloo's Taste AI and OpenAI.
+
             </p>
 
             <div className="mt-8">

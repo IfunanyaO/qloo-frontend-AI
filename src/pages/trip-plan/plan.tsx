@@ -20,15 +20,21 @@ const handlePlanTrip = async () => {
 
 
   return (
-    <div className="min-h-screen p-6 bg-gray-50">
-      <button
-        onClick={handlePlanTrip}
-        className="px-6 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700"
-      >
-        Generate Itinerary
-      </button>
+    <>
+      <div className="min-h-screen p-6 bg-gray-50">
+        <button
+          onClick={handlePlanTrip}
+          className="px-6 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700"
+        >
+          Generate Itinerary
+        </button>
 
-      {itinerary && <ItineraryViewer content={itinerary} />}
-    </div>
+        {itinerary && <ItineraryViewer content={itinerary} />}
+      </div>
+    
+    </>
+    
+
+    
   );
 }

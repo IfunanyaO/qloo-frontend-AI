@@ -1,4 +1,5 @@
 import classNames from "classnames";
+import logo from '@/assets/images/logos/app_logo.png';
 
 type Props = {
   logoClassName?: string;
@@ -14,9 +15,11 @@ export const FullLogo: React.FC<Props> = ({ textClassName, logoClassName }) => {
           "h-[20px] w-[20px] bg-[#D9D9D9] rounded-[4px]",
           logoClassName
         )}
-      />
+      >
+        <img src={logo} />
+      </div>
       <h1 className={classNames("text-base text-gray-800", textClassName)}>
-        CT Planner
+        Tania
       </h1>
     </div>
   );

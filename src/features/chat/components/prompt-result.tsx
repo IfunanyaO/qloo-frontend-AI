@@ -5,6 +5,7 @@ import RepeatIcon from "@/assets/images/svg/repeat.svg";
 import { Interaction } from "@/components/interaction";
 import TypeIt from "typeit-react";
 import styles from './prompt-result.module.css';
+import jsPDF from "jspdf";
 
 import { toast } from 'react-toastify';
 import { useEffect, useRef, useState } from "react";
@@ -18,6 +19,8 @@ import axios from "axios";
 import { useChatStore } from "@/store/useChatStore";
 import { useAuthStore } from "@/store/auth";
 import { VITE_API_BASE_URL} from "@/utils/constants";
+// import ItineraryViewer from './ItineraryViewer';
+import ItineraryViewer from '../../../pages/trip-plan/ItineraryViewer';
 
 export const PromptResult: React.FC = () => {
     const API_BASE_URL = VITE_API_BASE_URL;
@@ -62,8 +65,8 @@ useEffect(() => {
   }, [reasonings]); // Trigger when a new reasoning is added
 
   useEffect(() => {
-    if (claimData?.reasoning) {
-      let claimResultForUser = `${claimData.summary} ${claimData.reasoning}`;
+    if (claimData?.itinerary) {
+      let claimResultForUser = `${claimData.itinerary}`;
       console.log(claimResultForUser)
       // const claimResultForUsercombinedHTML = `
       //         <div>
@@ -73,6 +76,7 @@ useEffect(() => {
       //       `;
       setReasonings((prev) => [...prev, claimResultForUser]);
       setAnimateIndex(reasonings.length); // new reasoning will be animated
+      console.log("claimData",claimData);
     }
   }, [claimData]);
 
@@ -187,37 +191,85 @@ const handleCopyClick = () => {
 
   };
 
-  const handleDownloadClick = () => {
-  // toast.success("Download Button");
-   if (reasonings.length > 0) {
-     const { chatThread } = useChatStore.getState();
+  // const handleDownloadClick = () => {
+  // // toast.success("Download Button");
+  //  if (reasonings.length > 0) {
+  //    const { chatThread } = useChatStore.getState();
 
-  const userPrompts = chatThread.messages.filter((msg) => !msg.isSystem);
+  // const userPrompts = chatThread.messages.filter((msg) => !msg.isSystem);
 
-  if (userPrompts.length === 0 || reasonings.length === 0) {
+  // if (userPrompts.length === 0 || reasonings.length === 0) {
+  //   toast.info("There is no data to download");
+  //   return;
+  // }
+
+  // const textContent = userPrompts.map((msg, index) => {
+  //   const reasoning = reasonings[index] || "No reasoning available";
+  //   return `Chat ${index + 1}:\n${msg.content}\n\nPrompt ${index + 1}:\n${reasoning}`;
+  // }).join("\n\n------------------\n\n");
+
+  // const blob = new Blob([textContent], { type: "text/plain;charset=utf-8" });
+  // const url = URL.createObjectURL(blob);
+  // const link = document.createElement("a");
+  // link.href = url;
+  // link.download = "claim_reasonings.txt";
+  // document.body.appendChild(link);
+  // link.click();
+  // document.body.removeChild(link);
+  // URL.revokeObjectURL(url);
+  // }else{
+  //   toast.info("There is no data to download")
+  // }
+  // };
+
+const handleDownloadClick = () => {
+  if (reasonings.length > 0) {
+    const { chatThread } = useChatStore.getState();
+    const userPrompts = chatThread.messages.filter((msg) => !msg.isSystem);
+
+    if (userPrompts.length === 0 || reasonings.length === 0) {
+      toast.info("There is no data to download");
+      return;
+    }
+
+    const doc = new jsPDF();
+    doc.setFontSize(12);
+    let y = 10;
+
+    userPrompts.forEach((msg, index) => {
+      const reasoning = reasonings[index] || "No reasoning available";
+
+      doc.setFont("helvetica", 'bold');
+      doc.text(`Chat ${index + 1}`, 10, y);
+      y += 6;
+      doc.setFont("helvetica", 'normal');
+      doc.text(msg.content, 10, y);
+      y += 10;
+
+      doc.setFont("helvetica", 'bold');
+      doc.text(`Prompt ${index + 1}`, 10, y);
+      y += 6;
+      doc.setFont("helvetica", 'normal');
+
+      // Split long reasoning text to avoid overflow
+      const lines = doc.splitTextToSize(reasoning, 180);
+      doc.text(lines, 10, y);
+      y += lines.length * 6;
+
+      y += 10;
+
+      // Add new page if needed
+      if (y > 270) {
+        doc.addPage();
+        y = 10;
+      }
+    });
+
+    doc.save("claim_reasonings.pdf");
+  } else {
     toast.info("There is no data to download");
-    return;
   }
-
-  const textContent = userPrompts.map((msg, index) => {
-    const reasoning = reasonings[index] || "No reasoning available";
-    return `Chat ${index + 1}:\n${msg.content}\n\nPrompt ${index + 1}:\n${reasoning}`;
-  }).join("\n\n------------------\n\n");
-
-  const blob = new Blob([textContent], { type: "text/plain;charset=utf-8" });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = "claim_reasonings.txt";
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-  URL.revokeObjectURL(url);
-  }else{
-    toast.info("There is no data to download")
-  }
-  };
-
+};
 
 const handleTypingFinished = async (index: number, message: string) => {
   const claimId = claimData.claim_id;
@@ -228,8 +280,8 @@ const handleTypingFinished = async (index: number, message: string) => {
 
 
 const greetingHTML = isAuthenticated
-  ? `<h1 class="${styles.greeting}"><span class="${styles.hello}">Hello, </span><span class="${styles.name}">${user?.name}.</span></h1>`
-  : `<h1 class="${styles.greeting}"><span class="${styles.hello}">CultureTrip Planner </span><span class="${styles.name}">, Welcome!</span></h1>`;
+  ? `<h1 class="${styles.greeting}"><span class="${styles.hello}">Hi </span><span class="${styles.name}">${user?.name}, Where would you love to explore next? ✈️</span></h1>`
+  : `<h1 class="${styles.greeting}"><span class="${styles.hello}">Hi there!</span><span class="${styles.name}"> Where would you love to explore next? ✈️</span></h1>`;
 
   return (
     <>
@@ -237,7 +289,7 @@ const greetingHTML = isAuthenticated
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 w-[90%] max-w-2xl overflow-auto max-h-[80%]">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-lg font-semibold">Raw Claim JSON</h2>
+            <h2 className="text-lg font-semibold">Raw Data JSON</h2>
             <button
               onClick={() => setShowModal(false)}
               className="text-red-500 hover:text-red-700 font-bold"
@@ -273,7 +325,7 @@ const greetingHTML = isAuthenticated
                     </div>
                   )}
 
-                {reasonings.map((msg, index) => (
+                {/* {reasonings.map((msg, index) => (
                   <div
                     key={`reasoning-${index}`}
                     className="bg-surface-light dark:bg-surface-dark rounded-[12px] py-[10px] px-[12px]"
@@ -300,7 +352,17 @@ const greetingHTML = isAuthenticated
                       )}
                     </p>
                   </div>
-                ))}
+                ))} */}
+
+                {reasonings.length > 0 && (
+                  <div className="mt-6">
+                    {reasonings.map((msg, index) => (
+                      <div key={`reasoning-${index}`} className="mb-4">
+                        <ItineraryViewer content={msg} />
+                      </div>
+                    ))}
+                  </div>
+                )}
 
                 {/* If nothing has been typed yet but request is pending */}
                   {isClaimLoading && (
@@ -330,7 +392,7 @@ const greetingHTML = isAuthenticated
             <Interaction onClick={handleAudioClick} className="flex flex-col items-center gap-1">
               <PlayIcon  />
               <span className="text-text-light/70 dark:text-text-dark/40 text-sm text-center">
-                Raw Claim
+                Raw Data
               </span>
             </Interaction>
 
