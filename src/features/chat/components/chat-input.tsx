@@ -70,9 +70,15 @@ const setPrevClaim = useClaimStore((state) => state.setPrevClaim);
 
       console.log("bodyinfo", bodyInfo);
 
-      const response = await axios.get(`${API_BASE_URL}/trip/test`);
+      /* Ify Test Link */
+      // const response = await axios.get(`${API_BASE_URL}/trip/test`);
+      /* End of Test Link */
+
+      /* Ify  Production Link */
+      const response = await axios.post(`${API_BASE_URL}/endpoint/plan-trip`, bodyInfo);
+      /* End of Production Link */
+
       // const response = await axios.post(`${API_BASE_URL}/trip/extract-info`, bodyInfo);
-      // const response = await axios.post(`${API_BASE_URL}/endpoint/plan-trip`, bodyInfo);
 
      
       console.log("Cleaned response:", response.data);

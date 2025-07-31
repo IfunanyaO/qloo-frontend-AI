@@ -6,6 +6,7 @@ import { Interaction } from "@/components/interaction";
 import TypeIt from "typeit-react";
 import styles from './prompt-result.module.css';
 import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 
 import { toast } from 'react-toastify';
 import { useEffect, useRef, useState } from "react";
@@ -163,16 +164,37 @@ const handleCopyClick = () => {
     console.log(selectedModel);
 
 
-    try {
-      const response = await axios.post(`${API_BASE_URL}/engine/null-verifier`, {
-        // claim: prevClaim,
-        claim: "Inflammation and protects neuronal cells in Alzheimer's disease",
+      // let bodyInfo =   {
+      //   trip_claim: trip_info,
+      //   model: selectedModel,
+      //   loggedIn: true,
+      //   sessionId: "dbea7932-f80d-49d5-a915-0fa2ca7df43b"
+      //   // loggedIn: false,
+      //   // sessionId: null (User ID)
+      // }
+
+      let bodyInfo =   {
+        prompt:  prevClaim,
         model: selectedModel,
         loggedIn: isAuthenticated,
         sessionId: user?.id
         // loggedIn: false,
-        // sessionId: null
-      });
+        // sessionId: null (User ID)
+      }
+
+
+    try {
+      console.log("bodyinfo", bodyInfo);
+
+      /* Ify Test Link */
+      // const response = await axios.get(`${API_BASE_URL}/trip/test`);
+      /* End of Test Link */
+
+      /* Ify  Production Link */
+      const response = await axios.post(`${API_BASE_URL}/endpoint/plan-trip`, bodyInfo);
+      /* End of Production Link */
+
+      // const response = await axios.post(`${API_BASE_URL}/trip/extract-info`, bodyInfo);
 
       console.log("Cleaned response:", response.data);
 
@@ -222,54 +244,37 @@ const handleCopyClick = () => {
   // }
   // };
 
-const handleDownloadClick = () => {
-  if (reasonings.length > 0) {
-    const { chatThread } = useChatStore.getState();
-    const userPrompts = chatThread.messages.filter((msg) => !msg.isSystem);
+  const handleDownloadClick = () => {
+  // toast.success("Download Button");
+   if (reasonings.length > 0) {
+     const { chatThread } = useChatStore.getState();
 
-    if (userPrompts.length === 0 || reasonings.length === 0) {
-      toast.info("There is no data to download");
-      return;
-    }
+  const userPrompts = chatThread.messages.filter((msg) => !msg.isSystem);
 
-    const doc = new jsPDF();
-    doc.setFontSize(12);
-    let y = 10;
-
-    userPrompts.forEach((msg, index) => {
-      const reasoning = reasonings[index] || "No reasoning available";
-
-      doc.setFont("helvetica", 'bold');
-      doc.text(`Chat ${index + 1}`, 10, y);
-      y += 6;
-      doc.setFont("helvetica", 'normal');
-      doc.text(msg.content, 10, y);
-      y += 10;
-
-      doc.setFont("helvetica", 'bold');
-      doc.text(`Prompt ${index + 1}`, 10, y);
-      y += 6;
-      doc.setFont("helvetica", 'normal');
-
-      // Split long reasoning text to avoid overflow
-      const lines = doc.splitTextToSize(reasoning, 180);
-      doc.text(lines, 10, y);
-      y += lines.length * 6;
-
-      y += 10;
-
-      // Add new page if needed
-      if (y > 270) {
-        doc.addPage();
-        y = 10;
-      }
-    });
-
-    doc.save("claim_reasonings.pdf");
-  } else {
+  if (userPrompts.length === 0 || reasonings.length === 0) {
     toast.info("There is no data to download");
+    return;
   }
-};
+
+  const textContent = userPrompts.map((msg, index) => {
+    const reasoning = reasonings[index] || "No reasoning available";
+    return `Chat ${index + 1}:\n${msg.content}\n\nPrompt ${index + 1}:\n${reasoning}`;
+  }).join("\n\n------------------\n\n");
+
+  const blob = new Blob([textContent], { type: "text/plain;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "Itinerary.txt";
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+  }else{
+    toast.info("There is no data to download")
+  }
+  };
+
 
 const handleTypingFinished = async (index: number, message: string) => {
   const claimId = claimData.claim_id;

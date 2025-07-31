@@ -104,10 +104,6 @@ export const ChatSideBar: React.FC = () => {
       }
   };
 
-  const handleLinkBtnClick = () => {
-    setClaim("James");
-    toast.success("Generate Link");
-  };
 
   const handleUploadButtonClick = () => {
     fileInputRef.current?.click(); // Trigger hidden file input
@@ -173,17 +169,6 @@ export const ChatSideBar: React.FC = () => {
               />
           </Interaction>
         </motion.div>
-
-        {isAuthenticated ? (
-           <motion.div variants={itemVariants}>
-              <Interaction>
-                <AttachIcon onClick={handleLinkBtnClick} />
-              </Interaction>
-            </motion.div>
-        ) : (
-          // <p className="text-red-600">❌ Not authenticated</p>
-           <></>
-        )}
 
         <motion.div variants={itemVariants}>
           {isListening ? (
